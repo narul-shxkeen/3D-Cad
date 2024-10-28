@@ -1,74 +1,61 @@
-#include <QApplication>
-#include <QMainWindow>
-#include <QOpenGLWidget>
-#include <QKeyEvent>
-#include "src/renderer.h"
-#include "src/winged_edge.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include "src/Polyhedron.h"
+#include "src/Translate.h"
+#include "src/Rotate.h"
+#include "src/Scale.h"
 
-class GLWidget : public QOpenGLWidget {
-public:
-    GLWidget(QWidget *parent = nullptr) : QOpenGLWidget(parent) {}
+using namespace std;
 
-protected:
-    void initializeGL() override {
-        renderer.initialize();
+int main() {
+    string inputPath, outputPath;
+    cout << "Enter the path to the input file (e.g., inputs/polyhedron.txt): ";
+    cin >> inputPath;
+
+    // Load the polyhedron from the input file
+    Polyhedron polyhedron;
+    if (!polyhedron.loadFromFile(inputPath)) {
+        cerr << "Error: Could not load the polyhedron from file." << endl;
+        return 1;
     }
 
-    void resizeGL(int w, int h) override {
-        renderer.resize(w, h);
-    }
+    // Main loop for performing operations
+    string operation;
+    while (true) {
+        cout << "Enter operation (translate/rotate/scale/save/exit): ";
+        cin >> operation;
 
-    void paintGL() override {
-        renderer.render();
-    }
-
-    void keyPressEvent(QKeyEvent *event) override {
-        switch (event->key()) {
-            case Qt::Key_Left:
-                renderer.rotate(-5.0f, 0.0f, 1.0f, 0.0f);
-                break;
-            case Qt::Key_Right:
-                renderer.rotate(5.0f, 0.0f, 1.0f, 0.0f);
-                break;
-            case Qt::Key_Up:
-                renderer.rotate(-5.0f, 1.0f, 0.0f, 0.0f);
-                break;
-            case Qt::Key_Down:
-                renderer.rotate(5.0f, 1.0f, 0.0f, 0.0f);
-                break;
-            case Qt::Key_W:
-                renderer.translate(0.0f, 0.1f, 0.0f);
-                break;
-            case Qt::Key_S:
-                renderer.translate(0.0f, -0.1f, 0.0f);
-                break;
-            case Qt::Key_A:
-                renderer.translate(-0.1f, 0.0f, 0.0f);
-                break;
-            case Qt::Key_D:
-                renderer.translate(0.1f, 0.0f, 0.0f);
-                break;
+        if (operation == "translate") {
+            float tx, ty, tz;
+            cout << "Enter translation values (tx ty tz): ";
+            cin >> tx >> ty >> tz;
+            translate(polyhedron, tx, ty, tz);
+        } else if (operation == "rotate") {
+            float angle, rx, ry, rz;
+            cout << "Enter rotation angle and axis (angle rx ry rz): ";
+            cin >> angle >> rx >> ry >> rz;
+            rotate(polyhedron, angle, rx, ry, rz);
+        } else if (operation == "scale") {
+            float sx, sy, sz;
+            cout << "Enter scale factors (sx sy sz): ";
+            cin >> sx >> sy >> sz;
+            scale(polyhedron, sx, sy, sz);
+        } else if (operation == "save") {
+            cout << "Enter the output file path (e.g., outputs/output.txt): ";
+            cin >> outputPath;
+            if (!polyhedron.saveToFile(outputPath)) {
+                cerr << "Error: Could not save the polyhedron to file." << endl;
+                return 1;
+            }
+            cout << "Polyhedron saved to " << outputPath << endl;
+        } else if (operation == "exit") {
+            break;
+        } else {
+            cout << "Unknown operation. Please enter one of: translate, rotate, scale, save, exit." << endl;
         }
-        update();
     }
 
-private:
-    Renderer renderer;
-};
-
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-
-    WingedEdge model;
-    if (!model.loadFromFile("input.we")) {
-        return -1;
-    }
-
-    QMainWindow window;
-    GLWidget *glWidget = new GLWidget(&window);
-    window.setCentralWidget(glWidget);
-    window.resize(800, 600);
-    window.show();
-
-    return app.exec();
+    return 0;
 }

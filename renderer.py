@@ -53,10 +53,10 @@ def plot_polyhedron(vertices, edges):
 # Main function to read and plot the polyhedron
 if __name__ == "__main__":
     # Prompt for the input file name
-    input_file_name = input("Enter the name of the input file (without extension): ")
+    input_file_name = input("Enter the path of the input file: ")
 
     # Construct the full file path (assuming inputs are stored in 'inputs' directory)
-    file_path = os.path.join('inputs', input_file_name + '.txt')
+    file_path = os.path.join(input_file_name)
 
     # Check if the file exists
     if not os.path.exists(file_path):
