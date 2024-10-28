@@ -1,0 +1,23 @@
+# Vertices (base is a square, with top vertex at height 1)
+v 0 0 0   # bottom-left corner of the base
+v 1 0 0   # bottom-right corner of the base
+v 1 1 0   # top-right corner of the base
+v 0 1 0   # top-left corner of the base
+v 0.5 0.5 1   # top vertex (apex of the pyramid)
+
+# Edges
+e 0 1  # base edge between bottom-left and bottom-right
+e 1 2  # base edge between bottom-right and top-right
+e 2 3  # base edge between top-right and top-left
+e 3 0  # base edge between top-left and bottom-left
+e 0 4  # edge from bottom-left corner to apex
+e 1 4  # edge from bottom-right corner to apex
+e 2 4  # edge from top-right corner to apex
+e 3 4  # edge from top-left corner to apex
+
+# Faces (the pyramid has 5 faces: 4 triangular sides and 1 square base)
+f 0 1 2 3  # base face
+f 0 4 5 1  # triangular face between bottom-left, bottom-right, and apex
+f 1 5 6 2  # triangular face between bottom-right, top-right, and apex
+f 2 6 7 3  # triangular face between top-right, top-left, and apex
+f 3 7 4 0  # triangular face between top-left, bottom-left, and apex
